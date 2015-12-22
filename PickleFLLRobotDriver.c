@@ -190,7 +190,7 @@ void moveTestBetter(int power)  //Move the robot an arbitrary distance.  Encoder
     	motors[cnt].power=motors[cnt].power+powerAdjust;
       if (abs(motors[cnt].power)>powerCap(motors[cnt].absdifference, nMotorEncoder[lookUpComparison(cnt)])) motors[cnt].power=powerCap(motors[cnt].absdifference, nMotorEncoder[lookUpComparison(cnt)])*((motors[cnt].power>0)?1:-1);
       motor[lookUpComparison(cnt)]=motors[cnt].power;
-      nxtDisplayCenteredTextLine(cnt+2, "%d", motors[cnt].power)
+      nxtDisplayCenteredTextLine(cnt+2, "%d", motors[cnt].power);
     }
   }
   stopMotors();
