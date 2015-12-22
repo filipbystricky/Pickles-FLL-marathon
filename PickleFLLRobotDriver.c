@@ -20,15 +20,15 @@ typedef struct
 #define motorRight 1
 #define motorAux 2
 
-#define left motorA
-#define right motorB
-#define aux motorC
+//#define left motorA
+//#define right motorB
+//#define aux motorC
 
 #define kP (float)0.1
 #define kI (float)0
 #define kD (float)0
 
-#define threshold 30
+#define threshold 25
 
 
 bool initializeRobot()
