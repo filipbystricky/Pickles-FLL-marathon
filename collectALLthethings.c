@@ -9,7 +9,7 @@
 
 #include "AlignOnLine.c"
 task main() {
-/*	//drive(4200, 100);
+	//drive(4200, 100);
 //drive(4600,100);
 drive(2250, 100);
 alignOnLineColor(40);
@@ -29,7 +29,7 @@ drive(700, 60); //HIt the button
 	drive(1100, 70);
 	turn(200, 60);
 	alignOnLineColor(-40);
-	drive(250, 60);
+	drive(300, 60);
 	turn(340, 60);
 	drive (-1000, 40);//windshield
 	drive (-50, 30);
@@ -38,7 +38,7 @@ drive(700, 60); //HIt the button
 	//wait1Msec(100);
 	//driveAndAct(40, 0, 0, 0, 10);
 	//drive(100, 60);
-	turn(-300, 80);
+	turn(-320, 80);
 	motor[left] = 100;
 	motor[right] = 100;
 	wait1Msec(2000);
@@ -58,23 +58,35 @@ drive(700, 60); //HIt the button
 	stopMotors();
 	drive(-1000, 100);
 	alignOnLineColor(-40);
-	drive(100, 40);
+	drive(100, 50);
 	// C is for cookie
-	turn(350, 60);
+	turn(360, 60);
 	drive(800, 60);
 	motor[left] = 40;
 	motor[right] = 40;
-	while(SensorValue[rightLight] != 1);
+	while(SensorValue[leftLight] != 1);
 	stopMotors();
-	turn(-300, 40);	//trying to turn 90deg towards south wall
+	turn(-240, 40);	//trying to turn 90deg towards south wall
 	nMotorEncoder[aux] = 0;
-	while (nMotorEncoder[aux] > -40) {
+	while (nMotorEncoder[aux] > -60) {
 		motor[aux] = -30;
 	}
-	drive(-950, 60);
-	turn(190, 40);
-	drive(-500, 60);
+	drive(-1100, 75);
 	driveAndAct(88, 0, 0, 0, 30);
+	drive(150, 40);
+	turn(280, 40);
+	nMotorEncoder[aux] = 0;
+	while (nMotorEncoder[aux] > -20) {
+		motor[aux] = -30;
+	}
+	motor[aux] = 0;
+	drive(-250, 75);
+	motor[aux] = 30;
+	wait1Msec(400);
+	motor[aux]= 0;
+	drive(400, 40);
+	//driveAndAct(88, 0, 0, 0, 30);
+	turn(-100, 40);
 	/*
 	nMotorEncoder[aux] = 0;
 	while (nMotorEncoder[aux] > -40) {
@@ -90,4 +102,29 @@ drive(700, 60); //HIt the button
 //	drive(700, 60);
  	driveAndAct(88, 0, 0, 0, 30);*/
  	stopMotors();
+
+
+ 	drive(3000, 80);
+ 	turn(200, 80);
+ 	drive(2000, 100);
+ 	/*turn(650, 50);
+ 	nMotorEncoder[aux] = 0;
+	while (nMotorEncoder[aux] > -90) {
+		motor[aux] = -30;
+	}
+	motor[aux] = 0;
+
+
+ 	alignOnLineColor(-40);
+
+ 	motor[aux] = 30;
+	wait1Msec(400);
+	motor[aux]= 0;
+	drive(400, 80);
+	turn(-200, 60);
+	drive(-700, 50);
+	turn(400, 60);
+	drive(-700, 80);*/
+
+
 }
