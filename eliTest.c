@@ -4,5 +4,8 @@ task main()
 {
 	initializeRobot();
 	nxtDisplayCenteredTextLine(6, "Hello World");
-	drive(1000, 30);
+	while(true){
+		motors[aux].power=60;
+	}
+	driveAndAct(10, 20, 1000, 60, 60);
 }
