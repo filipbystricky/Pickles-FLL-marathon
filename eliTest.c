@@ -4,5 +4,7 @@ task main()
 {
 	initializeRobot();
 	nxtDisplayCenteredTextLine(6, "Hello World");
-	driveAndAct(10, 50, 1000, 60, 60);
+	//turnRightWheel(800, 40);
+	//drive(500, 60);
+	driveAndAct(600, 1500, 30, 60, 60);
 }

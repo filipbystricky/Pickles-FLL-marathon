@@ -152,15 +152,18 @@ void startMove()
 	}
 }
 
-void doMoveAux(int power, int auxpower, float distBefore){
-	int startDist = motors[motorLeft].absdifference;
+void doMoveAux(int power, int auxpower, float distanceBeforeAction){
 	while ((!bothArrived(motors[motorRight].absdifference,motors[motorLeft].absdifference)) || !auxArrived(motors[motorAux].absdifference))
 	{
-		writeDebugStreamLine("%d", motors[motorAux].absdifference);
-		if(!auxArrived(motors[motorAux].absdifference)){
+		writeDebugStreamLine("motorRight: %d, motorAux: %d", motors[motorRight].absdifference, motors[motorAux].absdifference);
+		writeDebugStreamLine("!Auxarrived? %d", !auxArrived(motors[motorAux].absdifference));
+		if((!auxArrived(motors[motorAux].absdifference) && (motors[motorRight].absdifference < distanceBeforeAction))){
+			writeDebugStreamLine("Aux should move");
 			motors[motorAux].power = 60;
 			motor[aux] = 60;
 			motors[motorAux].absdifference = abs(motors[motorAux].target-nMotorEncoder[aux]);
+		} else {
+			motor[aux] = 0;
 		}
 		if(!bothArrived(motors[motorRight].absdifference,motors[motorLeft].absdifference)){
 			clearTimer(T4);
@@ -214,6 +217,9 @@ void doMoveAux(int power, int auxpower, float distBefore){
 				motor[lookUpComparison(cnt)]=motors[cnt].power;
 				nxtDisplayCenteredTextLine(cnt+2, "%d", motors[cnt].power);
 			}
+		} else {
+			motor[left] = 0;
+			motor[right] = 0;
 		}
 	}
 }
@@ -246,14 +252,14 @@ void drive(float y, int motorpower)
 	moveTestBetter(motorpower);
 }
 
-void driveAndAct(float distanceBefore, float auxMovement, float totalDistance,
+void driveAndAct(float auxMovement, float totalDistance, float distanceAfterAuxStart,
 int movepower, int auxpower)
 {
 	motors[motorLeft].target = totalDistance;
 	motors[motorRight].target = totalDistance;
 	motors[motorAux].target = auxMovement;
 	startMove();
-	doMoveAux(movepower, auxpower, distanceBefore);
+	doMoveAux(movepower, auxpower, distanceAfterAuxStart + 30); //+30 is a magic number that makes it work. Not sure why.
 	stopMotors();
 }
 
@@ -265,6 +271,12 @@ void turn(float y, int motorpower)
 	moveTestBetter(motorpower);
 }
 
+void turnRightWheel(float y, int motorPower) {
+	motors[motorLeft].target = y;
+	motors[motorRight].target = 0;
+	motors[motorAux].target = 0;
+	moveTestBetter(motorPower);
+}
 /*void moveTest(int power)  //Move the robot an arbitrary distance.  Encoder targets are supplied by the functions that call this one.
 {
 reset();
