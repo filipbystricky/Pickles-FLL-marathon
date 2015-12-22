@@ -9,7 +9,7 @@
 
 #include "AlignOnLine.c"
 task main() {
-	drive(-1900, 80);
+	drive(-1700, 80);
 		motor[aux] = 30;
 		wait1Msec(600);
 		drive(1500, 80);

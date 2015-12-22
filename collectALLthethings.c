@@ -33,7 +33,7 @@ drive(700, 60); //HIt the button
 	turn(340, 60);
 	drive (-1000, 40);//windshield
 	drive (-50, 30);
-	drive(1000, 40); 		//this line and line above changed from 600 to 900
+	drive(1000, 70); 		//this line and line above changed from 600 to 900
 	//driveAndAct(60, 0, 0, 0, 10);
 	//wait1Msec(100);
 	//driveAndAct(40, 0, 0, 0, 10);
@@ -45,12 +45,12 @@ drive(700, 60); //HIt the button
 	stopMotors();/**/ //Aligned to wall
 	drive(-200, 60);
 	turn(330, 70);
-	drive(-600, 80);
+	drive(-400, 80);
 	motor[aux] = 30;
 	wait1Msec(600);
 	motor[aux] = 0;
 	//driveAndAct(90, 0, 0, 0, 10);
-	drive(575, 60); 	//back up
+	drive(375, 80); 	//back up
 	turn(-300, 70);
 	motor[left] = 100;
 	motor[right] = 100;
@@ -71,9 +71,12 @@ drive(700, 60); //HIt the button
 	while (nMotorEncoder[aux] > -60) {
 		motor[aux] = -30;
 	}
-	drive(-1100, 75);
-	driveAndAct(88, 0, 0, 0, 30);
-	drive(150, 40);
+	drive(-1000, 75);
+	motor[aux] = 30;
+	wait1Msec(400);
+	//driveAndAct(88, 0, 0, 0, 30);
+	drive(80, 40);
+	motor[aux] = 0;
 	turn(280, 40);
 	nMotorEncoder[aux] = 0;
 	while (nMotorEncoder[aux] > -20) {
@@ -83,8 +86,8 @@ drive(700, 60); //HIt the button
 	drive(-250, 75);
 	motor[aux] = 30;
 	wait1Msec(400);
-	motor[aux]= 0;
 	drive(400, 40);
+	motor[aux] = 0;
 	//driveAndAct(88, 0, 0, 0, 30);
 	turn(-100, 40);
 	/*
@@ -106,7 +109,11 @@ drive(700, 60); //HIt the button
 
  	drive(3000, 80);
  	turn(200, 80);
- 	drive(2000, 100);
+ 	//drive(2000, 100);
+ 	motor[left] = 100;
+ 	motor[right] = 100;
+ 	while(1);
+
  	/*turn(650, 50);
  	nMotorEncoder[aux] = 0;
 	while (nMotorEncoder[aux] > -90) {

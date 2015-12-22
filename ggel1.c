@@ -13,15 +13,18 @@ task main()
 {
 	drive(-2600, 80);
 	turn(-400, 80);
-	drive(600, 50);
-	wallFollowRight(4700, -80);
+	drive(500, 50);
+	wallFollowRight(4500, -80);
 	drive(1500, 80);
 	auxDump(50, 75);
 	auxDump(-40, -75);
 	drive(2200, 80);
-	turn(-350, 80);
+	turn(-350, 100);
 	//drive(600, 50);
-	drive(-2000, 80);
+	motor[left] = -100;
+	motor[right] = -100;
+	while(1);
+	//drive(-2500, 100);
 //	drive(-1000, 80);
 	/*
 	turn(400, -80);

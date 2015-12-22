@@ -19,16 +19,22 @@ wait1Msec(1500);
 stopMotors();
 drive(-300, 50);
 turn(400, 60);
-
+drive(50, 40);
 motor[aux] = -30;
 wait1Msec(200);
 motor[aux] = 0;
 
 turn(-100, 60);
 drive(1000, 70);
-turn(100, 80);
+turn(50, 80);
 drive(1500, 80);
-
+motor[left] = 40;
+motor[right] = 40;
+wait1Msec(1000);
+stopMotors();
+motor[aux]=-30;
+wait1Msec(1000);
+motor[aux] = 0;
 //drive(600, 80);
 /*alignOnLineColor(-40);
 turn(200, 40);
