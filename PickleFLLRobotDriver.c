@@ -285,7 +285,7 @@ void auxDump(int motorPower, int amt)
 	{
 		motor[aux] = motorPower;
 	}
-	stopAllMotors();
+	stopMotors();
 }
 
 
