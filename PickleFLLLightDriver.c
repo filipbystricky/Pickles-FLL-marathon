@@ -7,7 +7,7 @@
 #pragma systemFile
 
 #ifndef __COMMON_H__
-#include "newDrivers/common.h"
+#include "common.h"
 #endif
 #define PORT1 0
 #define PORT2 4
