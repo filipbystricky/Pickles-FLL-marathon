@@ -221,13 +221,13 @@ void drive(float y, int motorpower)
 	moveTestBetter(motorpower);
 }
 
-void driveAndDump(float distance, float aux, int distmotorpower, int auxmotorpower)
+/*void driveAndDump(float distance, float aux, int distmotorpower, int auxmotorpower)
 {
 	motors[motorLeft].target=distance;
 	motors[motorRight].target=distance;
 	motors[motorAux].target = aux;
 	moveTestBetter(distmotorpower);
-}
+}*/
 
 void turn(float y, int motorPower)
 {
@@ -244,6 +244,28 @@ void auxDump(int motorPower, int amt)
 		motor[aux] = motorPower;
 	}
 	stopAllMotors();
+}
+
+
+
+void wallFollowLeft(float degree, int power)
+{
+	nMotorEncoder[left] = 0;	//reset encoder value lefts
+	while(abs(nMotorEncoder[left]) < degree)
+	{
+		motor[left] = power;
+		motor[right] = (power*4)/5;
+	}
+}
+
+void wallFollowRight(float degree, int power)
+{
+	nMotorEncoder[right] = 0;	//reset encoder value lefts
+	while(abs(nMotorEncoder[right]) < degree)
+	{
+		motor[right] = power;
+		motor[left] = (power*4)/5;
+	}
 }
 
 /*void moveTest(int power)  //Move the robot an arbitrary distance.  Encoder targets are supplied by the functions that call this one.
