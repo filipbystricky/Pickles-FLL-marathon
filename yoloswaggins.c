@@ -2,7 +2,7 @@
 
 task main()
 {
-	while (initializeRobot()){
-		displayTextLine(6, "hello world");
-	}
+	initializeRobot();
+	displayTextLine(6, "hello world");
+	drive(1000, 50);
 }

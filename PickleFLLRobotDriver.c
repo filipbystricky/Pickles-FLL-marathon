@@ -197,6 +197,20 @@ void moveTestBetter(int power)  //Move the robot an arbitrary distance.  Encoder
   return;
 }
 
+//turn on motors
+void turnOnMotors(int pL, int pR)
+{
+	motor[right]=pR;
+	motor[left]=pL;
+}
+
+void drive(float y, int motorpower)
+{
+	motors[motorLeft].target=y;
+	motors[motorRight].target=y;
+	moveTestBetter(motorpower);
+}
+
 /*void moveTest(int power)  //Move the robot an arbitrary distance.  Encoder targets are supplied by the functions that call this one.
 {
   reset();
@@ -266,14 +280,6 @@ void moveTestBetter(int power)  //Move the robot an arbitrary distance.  Encoder
   return;
 }*/
 
-
-//turn on motors
-void turnOnMotors(int pL, int pR)
-{
-	motor[right]=pR;
-	motor[left]=pL;
-}
-
 //Read/write side data.  Used for telling teleop which side it is on.
 /*void writeSide(short isLeft)
 {
@@ -300,12 +306,7 @@ short readSide()
 //These are various reusable ways
 //of setting targets for the motors and thus moving in
 //reusable patterns.
-void drive(float y, int motorpower)
-{
-	motors[motorLeft].target=y;
-	motors[motorRight].target=y;
-	moveTestBetter(motorpower);
-}
+
 /*void weirdDrive(float x, float y, int motorpower)
 {
 	motors[mfront].target=x;
