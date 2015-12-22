@@ -20,9 +20,9 @@ typedef struct
 #define motorRight 1
 #define motorAux 2
 
-#define left motorA
+#define left motorC
 #define right motorB
-#define aux motorC
+#define aux motorA
 
 #define kP (float)0.1
 #define kI (float)0
