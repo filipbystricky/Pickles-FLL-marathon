@@ -239,10 +239,11 @@ void turn(float y, int motorPower)
 void auxDump(int motorPower, int amt)
 {
 	nMotorEncoder[aux] = 0;
-	while(nMotorEncoder[aux] < amt)
+	while(abs(nMotorEncoder[aux]) < amt)
 	{
 		motor[aux] = motorPower;
 	}
+	stopAllMotors();
 }
 
 /*void moveTest(int power)  //Move the robot an arbitrary distance.  Encoder targets are supplied by the functions that call this one.
