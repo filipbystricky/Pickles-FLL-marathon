@@ -10,9 +10,9 @@
 #include "common.h"
 #endif
 #define PORT1 0
-#define PORT2 4
-#define PORT3 8
-#define PORT4 12
+#define PORT2 1
+#define PORT3 2
+#define PORT4 3
 
 // Globals
 //Stores whether or not a sensor has been calibrated

@@ -46,6 +46,7 @@ void reset()
 {
 	nMotorEncoder[left]=0;
 	nMotorEncoder[right]=0;
+	nMotorEncoder[aux]=0;
 	return;
 }
 
@@ -115,10 +116,11 @@ void stopMotors() // Stops all motors
 {
 	motor[right]=0;
 	motor[left]=0;
+	motor[aux]=0;
 	return;
 }
 
-myMotor motors[2];
+myMotor motors[3];
 
 float atan2(long y,long nx)
 {
@@ -136,73 +138,101 @@ int powerCap(int absDif, int encoder)
 	int rampUp=30+abs(encoder)/10;
 	return (rampDown>rampUp)?rampUp:rampDown;
 }
-void moveTestBetter(int power)  //Move the robot an arbitrary distance.  Encoder targets are supplied by the functions that call this one.
+
+void startMove()
 {
 	reset();
 	wait1Msec(50);
 	//Initialize
-	for (int cnt=0; cnt<2; cnt++)
+	for (int cnt=0; cnt<3; cnt++)
 	{
 		motors[cnt].absdifference=abs(motors[cnt].target-nMotorEncoder[lookUpComparison(cnt)]);
 		motors[cnt].divZero=false;
 		motors[cnt].percentComplete=0.0;
 	}
-	//Go until the robot has arrived.
-	while (!bothArrived(motors[motorRight].absdifference,motors[motorLeft].absdifference))
+}
+
+void doMoveAux(int power, int auxpower, float distanceBeforeAction){
+	while ((!bothArrived(motors[motorRight].absdifference,motors[motorLeft].absdifference)) || !auxArrived(motors[motorAux].absdifference))
 	{
-		clearTimer(T4);
-		//Find which motor has the longest distance left to go.
-		int greatestValue=greatest(abs(motors[motorLeft].absdifference), abs(motors[motorRight].absdifference));
-		int leastValue=least(abs(motors[motorLeft].absdifference), abs(motors[motorRight].absdifference));
-		nxtDisplayCenteredTextLine(6, "%d,%d,%d", greatestValue, motors[greatestValue].absdifference, motors[greatestValue].target);
-		for (int cnt=0; cnt<2; cnt++)
-		{
-			motors[cnt].absdifference=abs(motors[cnt].target-nMotorEncoder[lookUpComparison(cnt)]);
-			motors[cnt].direction=( motors[cnt].target<nMotorEncoder[lookUpComparison(cnt)])?-1:1;
-			motors[cnt].power=calcBetterPower(abs(motors[cnt].absdifference), abs(motors[greatestValue].absdifference), abs(motors[leastValue].absdifference), abs(power), motors[cnt].direction);
-
-			nxtDisplayCenteredTextLine(cnt, "%d,%d,%d", nMotorEncoder[lookUpComparison(cnt)], motors[cnt].absdifference, motors[cnt].target);
-
-			if (motors[cnt].target==0)
-			{
-				motors[cnt].divZero=true;
-			}
-			else
-			{
-				motors[cnt].divZero=false;
-				motors[cnt].percentComplete=absFloat(nMotorEncoder[lookUpComparison(cnt)]/(float)motors[cnt].target);
-			}
-
+		writeDebugStreamLine("motorRight: %d, motorAux: %d", motors[motorRight].absdifference, motors[motorAux].absdifference);
+		writeDebugStreamLine("!Auxarrived? %d", !auxArrived(motors[motorAux].absdifference));
+		if((!auxArrived(motors[motorAux].absdifference) && (motors[motorRight].absdifference < distanceBeforeAction))){
+			writeDebugStreamLine("Aux should move");
+			motors[motorAux].power = 60;
+			motor[aux] = 60;
+			motors[motorAux].absdifference = abs(motors[motorAux].target-nMotorEncoder[aux]);
+		} else {
+			motor[aux] = 0;
 		}
-		//Two options-if scale down power cap, then scale down everything proportinally
-		//or do it individually.  I'm doing it individually above, but that can change.
-		//Or do proportional to how far left + constant*dif from average percent complete
-		float averagePercent=0;
-		float num=0;
-		for (int cnt=0; cnt<2; cnt++)
-		{
-			if (motors[cnt].divZero==false)
+		if(!bothArrived(motors[motorRight].absdifference,motors[motorLeft].absdifference)){
+			clearTimer(T4);
+			//Find which motor has the longest distance left to go.
+			int greatestValue=greatest(abs(motors[motorLeft].absdifference), abs(motors[motorRight].absdifference));
+			int leastValue=least(abs(motors[motorLeft].absdifference), abs(motors[motorRight].absdifference));
+			nxtDisplayCenteredTextLine(6, "%d,%d,%d", greatestValue, motors[greatestValue].absdifference, motors[greatestValue].target);
+			for (int cnt=0; cnt<2; cnt++)
 			{
-				averagePercent=averagePercent+motors[cnt].percentComplete;
-				num=num+1.0;
-			}
-		}
-		averagePercent=averagePercent/(float)num;
+				motors[cnt].absdifference=abs(motors[cnt].target-nMotorEncoder[lookUpComparison(cnt)]);
+				motors[cnt].direction=( motors[cnt].target<nMotorEncoder[lookUpComparison(cnt)])?-1:1;
+				motors[cnt].power=calcBetterPower(abs(motors[cnt].absdifference), abs(motors[greatestValue].absdifference), abs(motors[leastValue].absdifference), abs(power), motors[cnt].direction);
+				nxtDisplayCenteredTextLine(cnt, "%d,%d,%d", nMotorEncoder[lookUpComparison(cnt)], motors[cnt].absdifference, motors[cnt].target);
 
-		for (int cnt=0; cnt<2; cnt++)
-		{
-			//we're doing it individually here
-			float difference=nMotorEncoder[lookUpComparison(cnt)]-averagePercent*motors[cnt].target;
-			int powerAdjust=difference/10;
-			//Deactivating powerAdjust-it does not work properly yet
-			powerAdjust=0;
-			if (motors[cnt].power<0) powerAdjust=powerAdjust*-1;
-			motors[cnt].power=motors[cnt].power+powerAdjust;
-			if (abs(motors[cnt].power)>powerCap(motors[cnt].absdifference, nMotorEncoder[lookUpComparison(cnt)])) motors[cnt].power=powerCap(motors[cnt].absdifference, nMotorEncoder[lookUpComparison(cnt)])*((motors[cnt].power>0)?1:-1);
-			motor[lookUpComparison(cnt)]=motors[cnt].power;
-			nxtDisplayCenteredTextLine(cnt+2, "%d", motors[cnt].power);
+				if (motors[cnt].target==0)
+				{
+					motors[cnt].divZero=true;
+				}
+				else
+				{
+					motors[cnt].divZero=false;
+					motors[cnt].percentComplete=absFloat(nMotorEncoder[lookUpComparison(cnt)]/(float)motors[cnt].target);
+				}
+
+			}
+			//Two options-if scale down power cap, then scale down everything proportinally
+			//or do it individually.  I'm doing it individually above, but that can change.
+			//Or do proportional to how far left + constant*dif from average percent complete
+			float averagePercent=0;
+			float num=0;
+			for (int cnt=0; cnt<2; cnt++)
+			{
+				if (motors[cnt].divZero==false)
+				{
+					averagePercent=averagePercent+motors[cnt].percentComplete;
+					num=num+1.0;
+				}
+			}
+			averagePercent=averagePercent/(float)num;
+
+			for (int cnt=0; cnt<2; cnt++)
+			{
+				//we're doing it individually here
+				float difference=nMotorEncoder[lookUpComparison(cnt)] - averagePercent*motors[cnt].target;
+				int powerAdjust=difference/10;
+				//Deactivating powerAdjust-it does not work properly yet
+				powerAdjust=0;
+				if (motors[cnt].power<0) powerAdjust=powerAdjust*-1;
+				motors[cnt].power=motors[cnt].power+powerAdjust;
+				if (abs(motors[cnt].power)>powerCap(motors[cnt].absdifference, nMotorEncoder[lookUpComparison(cnt)])) motors[cnt].power=powerCap(motors[cnt].absdifference, nMotorEncoder[lookUpComparison(cnt)])*((motors[cnt].power>0)?1:-1);
+				motor[lookUpComparison(cnt)]=motors[cnt].power;
+				nxtDisplayCenteredTextLine(cnt+2, "%d", motors[cnt].power);
+			}
+		} else {
+			motor[left] = 0;
+			motor[right] = 0;
 		}
 	}
+}
+
+void doMove(int power){
+	motors[motorAux].target = 0;
+	doMoveAux(power, 0, 0);
+}
+
+void moveTestBetter(int power)  //Move the robot an arbitrary distance.  Encoder targets are supplied by the functions that call this one.
+{
+	startMove();
+	doMove(power);
 	stopMotors();
 	return;
 }
@@ -218,21 +248,33 @@ void drive(float y, int motorpower)
 {
 	motors[motorLeft].target=y;
 	motors[motorRight].target=y;
+	motors[motorAux].target=0;
 	moveTestBetter(motorpower);
 }
 
-/*void driveAndDump(float distance, float aux, int distmotorpower, int auxmotorpower)
+void driveAndAct(float auxMovement, float totalDistance, float distanceAfterAuxStart,
+int movepower, int auxpower)
 {
-	motors[motorLeft].target=distance;
-	motors[motorRight].target=distance;
-	motors[motorAux].target = aux;
-	moveTestBetter(distmotorpower);
-}*/
+	motors[motorLeft].target = totalDistance;
+	motors[motorRight].target = totalDistance;
+	motors[motorAux].target = auxMovement;
+	startMove();
+	doMoveAux(movepower, auxpower, distanceAfterAuxStart + 30); //+30 is a magic number that makes it work. Not sure why.
+	stopMotors();
+}
 
-void turn(float y, int motorPower)
+void turn(float y, int motorpower)
 {
 	motors[motorLeft].target = y;
 	motors[motorRight].target = -y;
+	motors[motorAux].target = 0;
+	moveTestBetter(motorpower);
+}
+
+void turnRightWheel(float y, int motorPower) {
+	motors[motorLeft].target = y;
+	motors[motorRight].target = 0;
+	motors[motorAux].target = 0;
 	moveTestBetter(motorPower);
 }
 
@@ -267,124 +309,3 @@ void wallFollowRight(float degree, int power)
 		motor[left] = (power*4)/5;
 	}
 }
-
-/*void moveTest(int power)  //Move the robot an arbitrary distance.  Encoder targets are supplied by the functions that call this one.
-{
-reset();
-wait1Msec(50);
-//Initialize
-for (int cnt=0; cnt<4; cnt++)
-{
-motors[cnt].absdifference=abs(motors[cnt].target-nMotorEncoder[lookUpComparison(cnt)]);
-motors[cnt].divZero=false;
-motors[cnt].percentComplete=0.0;
-}
-//Go until the robot has arrived.
-while (!(motors[mfront].absdifference,motors[mright].absdifference,motors[mleft].absdifference,motors[mback].absdifference))
-{
-ClearTimer(T4);
-//Find which motor has the longest distance left to go.
-int greatestValue=greatest(abs(motors[mfront].absdifference),abs(motors[mleft].absdifference), abs(motors[mback].absdifference), abs(motors[mright].absdifference));
-nxtDisplayCenteredTextLine(6, "%d,%d,%d", greatestValue, motors[greatestValue].absdifference, motors[greatestValue].target);
-for (int cnt=0; cnt<4; cnt++)
-{
-motors[cnt].absdifference=abs(motors[cnt].target-nMotorEncoder[lookUpComparison(cnt)]);
-motors[cnt].direction=( motors[cnt].target<nMotorEncoder[lookUpComparison(cnt)])?-1:1;
-motors[cnt].power=calcPower(abs(motors[cnt].absdifference), abs(motors[greatestValue].absdifference),abs(power), motors[cnt].direction);
-nxtDisplayCenteredTextLine(cnt, "%d,%d,%d", nMotorEncoder[lookUpComparison(cnt)], motors[cnt].absdifference, motors[cnt].target);
-
-if (motors[cnt].target==0)
-{
-motors[cnt].divZero=true;
-}
-else
-{
-motors[cnt].divZero=false;
-motors[cnt].percentComplete=absFloat(nMotorEncoder[lookUpComparison(cnt)]/(float)motors[cnt].target);
-}
-
-}
-//Two options-if scale down power cap, then scale down everything proportinally
-//or do it individually.  I'm doing it individually above, but that can change.
-//Or do proportional to how far left + constant*dif from average percent complete
-float averagePercent=0;
-float num=0;
-for (int cnt=0; cnt<4; cnt++)
-{
-if (motors[cnt].divZero==false)
-{
-averagePercent=averagePercent+motors[cnt].percentComplete;
-num=num+1.0;
-}
-}
-averagePercent=averagePercent/(float)num;
-
-for (int cnt=0; cnt<4; cnt++)
-{
-//we're doing it individually here
-float difference=nMotorEncoder[lookUpComparison(cnt)]-averagePercent*motors[cnt].target;
-int powerAdjust=difference/10;
-//Deactivating powerAdjust-it does not work properly yet
-powerAdjust=0;
-if (motors[cnt].power<0) powerAdjust=powerAdjust*-1;
-motors[cnt].power=motors[cnt].power+powerAdjust;
-if (abs(motors[cnt].power)>powerCap(motors[cnt].absdifference, nMotorEncoder[lookUpComparison(cnt)])) motors[cnt].power=powerCap(motors[cnt].absdifference, nMotorEncoder[lookUpComparison(cnt)])*((motors[cnt].power>0)?1:-1);
-motor[lookUpComparison(cnt)]=motors[cnt].power;
-}
-updateStaggeredPowers();
-}
-stopMotors();
-return;
-}*/
-
-//Read/write side data.  Used for telling teleop which side it is on.
-/*void writeSide(short isLeft)
-{
-TFileHandle hFileHandle;
-TFileIOResult nIoResult;
-short nFileSize = sizeof(isLeft);
-Delete(SIDEDATADAT, nIoResult);
-OpenWrite(hFileHandle, nIoResult, SIDEDATADAT, nFileSize);
-WriteShort(hFileHandle, nIoResult, isLeft);
-Close(hFileHandle, nIoResult);
-}
-short readSide()
-{
-TFileHandle hFileHandle;
-TFileIOResult nIoResult;
-short tempVal=0;
-short nFileSize = sizeof(tempVal);
-OpenRead(hFileHandle, nIoResult, SIDEDATADAT, nFileSize);
-ReadShort(hFileHandle, nIoResult, tempVal);
-Close(hFileHandle, nIoResult);
-return tempVal;
-}
-*/
-//These are various reusable ways
-//of setting targets for the motors and thus moving in
-//reusable patterns.
-
-/*void weirdDrive(float x, float y, int motorpower)
-{
-motors[mfront].target=x;
-motors[mback].target=x;
-motors[mleft].target=y;
-motors[mright].target=y+000;
-moveTest(motorpower);
-}
-void rotateAroundFront()
-{
-motors[mfront].target=0;
-motors[mback].target=-3000;
-motors[mright].target=-1500;
-motors[mleft].target=1500;
-moveTest(70);
-}
-void turn(float turnStuff, int power)
-{
-motors[mfront].target=turnStuff;
-motors[mright].target=-turnStuff;
-motors[mback].target=-turnStuff;
-motors[mleft].target=turnStuff;
-moveTestBetter(power);
-}*/
