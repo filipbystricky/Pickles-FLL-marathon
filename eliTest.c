@@ -4,7 +4,5 @@ task main()
 {
 	initializeRobot();
 	nxtDisplayCenteredTextLine(6, "Hello World");
-	while(true){
-		motor[left] = 100;
-	}
+	drive(1000, 30);
 }
