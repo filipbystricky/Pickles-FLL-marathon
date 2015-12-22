@@ -20,15 +20,15 @@ typedef struct
 #define motorRight 1
 #define motorAux 2
 
-//#define left motorA
-//#define right motorB
-//#define aux motorC
+#define left motorC
+#define right motorB
+#define aux motorA
 
 #define kP (float)0.1
 #define kI (float)0
 #define kD (float)0
 
-#define threshold 25
+#define threshold 30
 
 
 bool initializeRobot()
@@ -277,126 +277,6 @@ void turnRightWheel(float y, int motorPower) {
 	motors[motorAux].target = 0;
 	moveTestBetter(motorPower);
 }
-/*void moveTest(int power)  //Move the robot an arbitrary distance.  Encoder targets are supplied by the functions that call this one.
-{
-reset();
-wait1Msec(50);
-//Initialize
-for (int cnt=0; cnt<4; cnt++)
-{
-motors[cnt].absdifference=abs(motors[cnt].target-nMotorEncoder[lookUpComparison(cnt)]);
-motors[cnt].divZero=false;
-motors[cnt].percentComplete=0.0;
-}
-//Go until the robot has arrived.
-while (!allArrived(motors[mfront].absdifference,motors[mright].absdifference,motors[mleft].absdifference,motors[mback].absdifference))
-{
-ClearTimer(T4);
-//Find which motor has the longest distance left to go.
-int greatestValue=greatest(abs(motors[mfront].absdifference),abs(motors[mleft].absdifference), abs(motors[mback].absdifference), abs(motors[mright].absdifference));
-nxtDisplayCenteredTextLine(6, "%d,%d,%d", greatestValue, motors[greatestValue].absdifference, motors[greatestValue].target);
-for (int cnt=0; cnt<4; cnt++)
-{
-motors[cnt].absdifference=abs(motors[cnt].target-nMotorEncoder[lookUpComparison(cnt)]);
-motors[cnt].direction=( motors[cnt].target<nMotorEncoder[lookUpComparison(cnt)])?-1:1;
-motors[cnt].power=calcPower(abs(motors[cnt].absdifference), abs(motors[greatestValue].absdifference),abs(power), motors[cnt].direction);
-nxtDisplayCenteredTextLine(cnt, "%d,%d,%d", nMotorEncoder[lookUpComparison(cnt)], motors[cnt].absdifference, motors[cnt].target);
-
-if (motors[cnt].target==0)
-{
-motors[cnt].divZero=true;
-}
-else
-{
-motors[cnt].divZero=false;
-motors[cnt].percentComplete=absFloat(nMotorEncoder[lookUpComparison(cnt)]/(float)motors[cnt].target);
-}
-
-}
-//Two options-if scale down power cap, then scale down everything proportinally
-//or do it individually.  I'm doing it individually above, but that can change.
-//Or do proportional to how far left + constant*dif from average percent complete
-float averagePercent=0;
-float num=0;
-for (int cnt=0; cnt<4; cnt++)
-{
-if (motors[cnt].divZero==false)
-{
-averagePercent=averagePercent+motors[cnt].percentComplete;
-num=num+1.0;
-}
-}
-averagePercent=averagePercent/(float)num;
-
-for (int cnt=0; cnt<4; cnt++)
-{
-//we're doing it individually here
-float difference=nMotorEncoder[lookUpComparison(cnt)]-averagePercent*motors[cnt].target;
-int powerAdjust=difference/10;
-//Deactivating powerAdjust-it does not work properly yet
-powerAdjust=0;
-if (motors[cnt].power<0) powerAdjust=powerAdjust*-1;
-motors[cnt].power=motors[cnt].power+powerAdjust;
-if (abs(motors[cnt].power)>powerCap(motors[cnt].absdifference, nMotorEncoder[lookUpComparison(cnt)])) motors[cnt].power=powerCap(motors[cnt].absdifference, nMotorEncoder[lookUpComparison(cnt)])*((motors[cnt].power>0)?1:-1);
-motor[lookUpComparison(cnt)]=motors[cnt].power;
-}
-updateStaggeredPowers();
-}
-stopMotors();
-return;
-}*/
-
-//Read/write side data.  Used for telling teleop which side it is on.
-/*void writeSide(short isLeft)
-{
-TFileHandle hFileHandle;
-TFileIOResult nIoResult;
-short nFileSize = sizeof(isLeft);
-Delete(SIDEDATADAT, nIoResult);
-OpenWrite(hFileHandle, nIoResult, SIDEDATADAT, nFileSize);
-WriteShort(hFileHandle, nIoResult, isLeft);
-Close(hFileHandle, nIoResult);
-}
-short readSide()
-{
-TFileHandle hFileHandle;
-TFileIOResult nIoResult;
-short tempVal=0;
-short nFileSize = sizeof(tempVal);
-OpenRead(hFileHandle, nIoResult, SIDEDATADAT, nFileSize);
-ReadShort(hFileHandle, nIoResult, tempVal);
-Close(hFileHandle, nIoResult);
-return tempVal;
-}
-*/
-//These are various reusable ways
-//of setting targets for the motors and thus moving in
-//reusable patterns.
-
-/*void weirdDrive(float x, float y, int motorpower)
-{
-motors[mfront].target=x;
-motors[mback].target=x;
-motors[mleft].target=y;
-motors[mright].target=y+000;
-moveTest(motorpower);
-}
-void rotateAroundFront()
-{
-motors[mfront].target=0;
-motors[mback].target=-3000;
-motors[mright].target=-1500;
-motors[mleft].target=1500;
-moveTest(70);
-}
-void turn(float turnStuff, int power)
-{
-motors[mfront].target=turnStuff;
-motors[mright].target=-turnStuff;
-motors[mback].target=-turnStuff;
-motors[mleft].target=turnStuff;
-moveTestBetter(power);
-}*/
 
 void auxDump(int motorPower, int amt)
 {
@@ -405,126 +285,27 @@ void auxDump(int motorPower, int amt)
 	{
 		motor[aux] = motorPower;
 	}
-	stopMotors();
+	stopAllMotors();
 }
 
-/*void moveTest(int power)  //Move the robot an arbitrary distance.  Encoder targets are supplied by the functions that call this one.
-{
-reset();
-wait1Msec(50);
-//Initialize
-for (int cnt=0; cnt<4; cnt++)
-{
-motors[cnt].absdifference=abs(motors[cnt].target-nMotorEncoder[lookUpComparison(cnt)]);
-motors[cnt].divZero=false;
-motors[cnt].percentComplete=0.0;
-}
-//Go until the robot has arrived.
-while (!(motors[mfront].absdifference,motors[mright].absdifference,motors[mleft].absdifference,motors[mback].absdifference))
-{
-ClearTimer(T4);
-//Find which motor has the longest distance left to go.
-int greatestValue=greatest(abs(motors[mfront].absdifference),abs(motors[mleft].absdifference), abs(motors[mback].absdifference), abs(motors[mright].absdifference));
-nxtDisplayCenteredTextLine(6, "%d,%d,%d", greatestValue, motors[greatestValue].absdifference, motors[greatestValue].target);
-for (int cnt=0; cnt<4; cnt++)
-{
-motors[cnt].absdifference=abs(motors[cnt].target-nMotorEncoder[lookUpComparison(cnt)]);
-motors[cnt].direction=( motors[cnt].target<nMotorEncoder[lookUpComparison(cnt)])?-1:1;
-motors[cnt].power=calcPower(abs(motors[cnt].absdifference), abs(motors[greatestValue].absdifference),abs(power), motors[cnt].direction);
-nxtDisplayCenteredTextLine(cnt, "%d,%d,%d", nMotorEncoder[lookUpComparison(cnt)], motors[cnt].absdifference, motors[cnt].target);
 
-if (motors[cnt].target==0)
+
+void wallFollowLeft(float degree, int power)
 {
-motors[cnt].divZero=true;
-}
-else
-{
-motors[cnt].divZero=false;
-motors[cnt].percentComplete=absFloat(nMotorEncoder[lookUpComparison(cnt)]/(float)motors[cnt].target);
+	nMotorEncoder[left] = 0;	//reset encoder value lefts
+	while(abs(nMotorEncoder[left]) < degree)
+	{
+		motor[left] = power;
+		motor[right] = (power*4)/5;
+	}
 }
 
-}
-//Two options-if scale down power cap, then scale down everything proportinally
-//or do it individually.  I'm doing it individually above, but that can change.
-//Or do proportional to how far left + constant*dif from average percent complete
-float averagePercent=0;
-float num=0;
-for (int cnt=0; cnt<4; cnt++)
+void wallFollowRight(float degree, int power)
 {
-if (motors[cnt].divZero==false)
-{
-averagePercent=averagePercent+motors[cnt].percentComplete;
-num=num+1.0;
+	nMotorEncoder[right] = 0;	//reset encoder value lefts
+	while(abs(nMotorEncoder[right]) < degree)
+	{
+		motor[right] = power;
+		motor[left] = (power*4)/5;
+	}
 }
-}
-averagePercent=averagePercent/(float)num;
-
-for (int cnt=0; cnt<4; cnt++)
-{
-//we're doing it individually here
-float difference=nMotorEncoder[lookUpComparison(cnt)]-averagePercent*motors[cnt].target;
-int powerAdjust=difference/10;
-//Deactivating powerAdjust-it does not work properly yet
-powerAdjust=0;
-if (motors[cnt].power<0) powerAdjust=powerAdjust*-1;
-motors[cnt].power=motors[cnt].power+powerAdjust;
-if (abs(motors[cnt].power)>powerCap(motors[cnt].absdifference, nMotorEncoder[lookUpComparison(cnt)])) motors[cnt].power=powerCap(motors[cnt].absdifference, nMotorEncoder[lookUpComparison(cnt)])*((motors[cnt].power>0)?1:-1);
-motor[lookUpComparison(cnt)]=motors[cnt].power;
-}
-updateStaggeredPowers();
-}
-stopMotors();
-return;
-}*/
-
-//Read/write side data.  Used for telling teleop which side it is on.
-/*void writeSide(short isLeft)
-{
-TFileHandle hFileHandle;
-TFileIOResult nIoResult;
-short nFileSize = sizeof(isLeft);
-Delete(SIDEDATADAT, nIoResult);
-OpenWrite(hFileHandle, nIoResult, SIDEDATADAT, nFileSize);
-WriteShort(hFileHandle, nIoResult, isLeft);
-Close(hFileHandle, nIoResult);
-}
-short readSide()
-{
-TFileHandle hFileHandle;
-TFileIOResult nIoResult;
-short tempVal=0;
-short nFileSize = sizeof(tempVal);
-OpenRead(hFileHandle, nIoResult, SIDEDATADAT, nFileSize);
-ReadShort(hFileHandle, nIoResult, tempVal);
-Close(hFileHandle, nIoResult);
-return tempVal;
-}
-*/
-//These are various reusable ways
-//of setting targets for the motors and thus moving in
-//reusable patterns.
-
-/*void weirdDrive(float x, float y, int motorpower)
-{
-motors[mfront].target=x;
-motors[mback].target=x;
-motors[mleft].target=y;
-motors[mright].target=y+000;
-moveTest(motorpower);
-}
-void rotateAroundFront()
-{
-motors[mfront].target=0;
-motors[mback].target=-3000;
-motors[mright].target=-1500;
-motors[mleft].target=1500;
-moveTest(70);
-}
-void turn(float turnStuff, int power)
-{
-motors[mfront].target=turnStuff;
-motors[mright].target=-turnStuff;
-motors[mback].target=-turnStuff;
-motors[mleft].target=turnStuff;
-moveTestBetter(power);
-}*/
