@@ -156,9 +156,11 @@ void doMoveAux(int power, int auxpower, float distBefore){
 	int startDist = motors[motorLeft].absdifference;
 	while ((!bothArrived(motors[motorRight].absdifference,motors[motorLeft].absdifference)) || !auxArrived(motors[motorAux].absdifference))
 	{
-		if(!auxArrived(motors[motorAux].absdifference) && startDist - motors[motorLeft].absdifference > distBefore){
-			motors[aux].power=auxpower;
-			motors[aux].absdifference=abs(motors[aux].target-nMotorEncoder[lookUpComparison(aux)]);
+		writeDebugStreamLine("%d", motors[motorAux].absdifference);
+		if(!auxArrived(motors[motorAux].absdifference)){
+			motors[motorAux].power = 60;
+			motor[aux] = 60;
+			motors[motorAux].absdifference = abs(motors[motorAux].target-nMotorEncoder[aux]);
 		}
 		if(!bothArrived(motors[motorRight].absdifference,motors[motorLeft].absdifference)){
 			clearTimer(T4);
@@ -391,7 +393,7 @@ void auxDump(int motorPower, int amt)
 	{
 		motor[aux] = motorPower;
 	}
-	stopAllMotors();
+	stopMotors();
 }
 
 /*void moveTest(int power)  //Move the robot an arbitrary distance.  Encoder targets are supplied by the functions that call this one.
@@ -514,4 +516,3 @@ motors[mback].target=-turnStuff;
 motors[mleft].target=turnStuff;
 moveTestBetter(power);
 }*/
->>>>>>> 37b2e49bf69f5969fb0410908919336be77b6588
