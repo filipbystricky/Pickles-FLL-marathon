@@ -19,7 +19,7 @@ wait1Msec(1500);
 stopMotors();
 drive(-300, 50);
 turn(400, 60);
-drive(50, 40);
+drive(-50, 40);
 motor[aux] = -30;
 wait1Msec(200);
 motor[aux] = 0;

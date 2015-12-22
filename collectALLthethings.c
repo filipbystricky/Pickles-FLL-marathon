@@ -106,10 +106,10 @@ drive(700, 60); //HIt the button
  	driveAndAct(88, 0, 0, 0, 30);*/
  	stopMotors();
 
-
+	//arcTurn(6000, 5000, 100);
  	drive(3000, 80);
  	turn(200, 80);
- 	//drive(2000, 100);
+ 	drive(2000, 100);
  	motor[left] = 100;
  	motor[right] = 100;
  	while(1);

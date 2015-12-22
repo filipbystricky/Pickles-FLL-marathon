@@ -271,6 +271,13 @@ void turn(float y, int motorpower)
 	moveTestBetter(motorpower);
 }
 
+void arcTurn(float leftDist, float rightDist, int motorPower) {
+	motors[motorLeft].target = leftDist;
+	motors[motorRight].target = rightDist;
+	motors[motorAux].target = 0;
+	moveTestBetter(motorPower);
+}
+
 void turnRightWheel(float y, int motorPower) {
 	motors[motorLeft].target = y;
 	motors[motorRight].target = 0;

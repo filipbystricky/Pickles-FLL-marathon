@@ -18,7 +18,11 @@ task main()
 	drive(1500, 80);
 	auxDump(50, 75);
 	auxDump(-40, -75);
+	motor[aux] = -30;
+	wait1Msec(100);
+	motor[aux]=0;
 	drive(2200, 80);
+	motor[aux] = 0;
 	turn(-350, 100);
 	//drive(600, 50);
 	motor[left] = -100;
